@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TaTeTi - Tres en Línea</title>
-  <link rel="stylesheet" href="estilo.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piedra, Papel o Tijeras</title>
+  <link rel="stylesheet" href="estilo.css">
 </head>
 <body>
-  <h1>TaTeTi (Tres en Línea)</h1>
-  <div id="formulario">
-    <input type="text" id="jugador1" placeholder="Jugador X">
-    <input type="text" id="jugador2" placeholder="Jugador O">
-    <button onclick="iniciarJuego()">Iniciar</button>
+  <h1>Piedra, Papel o Tijeras</h1>
+  <input type="text" id="nombreJugador" placeholder="Tu nombre">
+  <button onclick="iniciarJuego()">Iniciar</button>
+
+  <div id="juego" style="display:none">
+    <h2>Elige una opción:</h2>
+    <div class="opciones">
+      <button onclick="jugar('piedra')">🪨</button>
+      <button onclick="jugar('papel')">📄</button>
+      <button onclick="jugar('tijeras')">✂️</button>
+    </div>
+    <div id="resultado"></div>
+    <div id="puntajes"></div>
   </div>
-  <div id="tablero"></div>
-  <div id="estado"></div>
-  <div id="estadisticas"></div>
-  <button onclick="reiniciarJuego()">Reiniciar Juego</button>
 
   <script src="script.js"></script>
 </body>

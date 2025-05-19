@@ -1,85 +1,42 @@
-let turno = 'X';
-let celdas;
-let jugadorX = '';
-let jugadorO = '';
-let juegoActivo = false;
+let jugador = '';
+let puntajes = { jugador: 0, computadora: 0 };
 
 function iniciarJuego() {
-  jugadorX = document.getElementById('jugador1').value.trim() || 'Jugador X';
-  jugadorO = document.getElementById('jugador2').value.trim() || 'Jugador O';
-  turno = 'X';
-  juegoActivo = true;
-  document.getElementById('estado').textContent = `Turno de ${turno === 'X' ? jugadorX : jugadorO}`;
-  crearTablero();
+  jugador = document.getElementById('nombreJugador').value.trim() || 'Jugador';
+  document.getElementById('juego').style.display = 'block';
+  mostrarPuntajes();
 }
 
-function crearTablero() {
-  const tablero = document.getElementById('tablero');
-  tablero.innerHTML = '';
-  for (let i = 0; i < 9; i++) {
-    const div = document.createElement('div');
-    div.className = 'celda';
-    div.dataset.index = i;
-    div.addEventListener('click', marcarCelda);
-    tablero.appendChild(div);
-  }
-  celdas = Array(9).fill(null);
-}
+function jugar(eleccionJugador) {
+  const opciones = ['piedra', 'papel', 'tijeras'];
+  const eleccionPC = opciones[Math.floor(Math.random() * 3)];
+  let resultado = '';
 
-function marcarCelda(e) {
-  const index = e.target.dataset.index;
-  if (!juegoActivo || celdas[index]) return;
-
-  celdas[index] = turno;
-  e.target.textContent = turno;
-
-  if (verificarGanador()) {
-    const ganador = turno === 'X' ? jugadorX : jugadorO;
-    document.getElementById('estado').textContent = `¡${ganador} gana!`;
-    guardarEstadistica(ganador);
-    juegoActivo = false;
-    return;
+  if (eleccionJugador === eleccionPC) {
+    resultado = '¡Empate!';
+  } else if (
+    (eleccionJugador === 'piedra' && eleccionPC === 'tijeras') ||
+    (eleccionJugador === 'papel' && eleccionPC === 'piedra') ||
+    (eleccionJugador === 'tijeras' && eleccionPC === 'papel')
+  ) {
+    resultado = `¡${jugador} gana!`;
+    puntajes.jugador++;
+  } else {
+    resultado = '¡La computadora gana!';
+    puntajes.computadora++;
   }
 
-  if (!celdas.includes(null)) {
-    document.getElementById('estado').textContent = '¡Empate!';
-    guardarEstadistica('Empates');
-    juegoActivo = false;
-    return;
-  }
-
-  turno = turno === 'X' ? 'O' : 'X';
-  document.getElementById('estado').textContent = `Turno de ${turno === 'X' ? jugadorX : jugadorO}`;
+  document.getElementById('resultado').innerText = `${jugador}: ${eleccionJugador} - PC: ${eleccionPC}\n${resultado}`;
+  guardarPuntajes();
+  mostrarPuntajes();
 }
 
-function verificarGanador() {
-  const combinaciones = [
-    [0,1,2], [3,4,5], [6,7,8],
-    [0,3,6], [1,4,7], [2,5,8],
-    [0,4,8], [2,4,6]
-  ];
-  return combinaciones.some(comb => comb.every(i => celdas[i] === turno));
+function guardarPuntajes() {
+  const data = JSON.parse(localStorage.getItem('ppt-jugadores') || '{}');
+  data[jugador] = puntajes.jugador;
+  localStorage.setItem('ppt-jugadores', JSON.stringify(data));
 }
 
-function guardarEstadistica(ganador) {
-  const estadisticas = JSON.parse(localStorage.getItem('tateti-scores') || '{}');
-  estadisticas[ganador] = (estadisticas[ganador] || 0) + 1;
-  localStorage.setItem('tateti-scores', JSON.stringify(estadisticas));
-  mostrarEstadisticas();
+function mostrarPuntajes() {
+  document.getElementById('puntajes').innerText = `${jugador}: ${puntajes.jugador} | Computadora: ${puntajes.computadora}`;
 }
-
-function mostrarEstadisticas() {
-  const estadisticas = JSON.parse(localStorage.getItem('tateti-scores') || '{}');
-  let html = '<h3>Estadísticas:</h3><ul>';
-  for (const jugador in estadisticas) {
-    html += `<li>${jugador}: ${estadisticas[jugador]} victoria(s)</li>`;
-  }
-  html += '</ul>';
-  document.getElementById('estadisticas').innerHTML = html;
-}
-
-function reiniciarJuego() {
-  iniciarJuego();
-}
-
-window.onload = mostrarEstadisticas;
